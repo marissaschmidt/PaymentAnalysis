@@ -1,0 +1,77 @@
+Number of accounts: 500
+hadoop_192902, 1, 242534, 78.65
+
+Number of accounts: 1000
+hadoop_193101, 1, 484880, 79.54
+
+Number of accounts: 2500
+hadoop_193259, 1, 1214416, 78.57
+
+Number of accounts: 5000
+hadoop_193456, 1, 2430107, 78.52
+
+Number of accounts: 10000
+hadoop_193654, 1, 4857271, 81.57
+
+Number of accounts: 20000
+hadoop_193853, 1, 9644195, 84.54
+
+Number of accounts: 500
+hadoop_090409, 1, 240727, 78.57
+hive_090528, 1, 240727, 532.52
+
+Number of accounts: 1000
+hadoop_091510, 1, 484946, 78.48
+hive_091629, 1, 484946, 534.78
+
+Number of accounts: 2500
+hadoop_092610, 1, 1217497, 79.49
+hive_092731, 1, 1217497, 537.17
+
+Number of accounts: 5000
+hadoop_093715, 1, 2426025, 78.45
+hive_093835, 1, 2426025, 536.61
+
+Number of accounts: 10000
+hadoop_094819, 1, 4839711, 84.48
+hive_094944, 1, 4839711, 544.26
+
+Number of accounts: 20000
+hadoop_095935, 1, 9709549, 87.44
+hive_100104, 1, 9709549, 546.65
+
+Number of accounts: 500
+hadoop_102403, 1, 239798, 79.45
+hive_102524, 1, 239798, 532.01
+
+Number of accounts: 1000
+hadoop_103501, 1, 479356, 79.50
+hive_103622, 1, 479356, 531.55
+
+Number of accounts: 2500
+hadoop_104559, 1, 1216107, 79.42
+hive_104720, 1, 1216107, 534.16
+
+Number of accounts: 5000
+hadoop_105700, 1, 2434930, 79.44
+hive_105821, 1, 2434930, 537.00
+
+Number of accounts: 10000
+hadoop_110804, 1, 4863123, 81.48
+hive_110927, 1, 4863123, 543.51
+
+Number of accounts: 20000
+hadoop_111918, 1, 9679389, 87.47
+hive_112046, 1, 9679389, 543.64
+
+Number of accounts: 15000
+hadoop_211103, 1, 7244686, 82.39
+hive_211227, 1, 7244686, 543.95
+
+
+	500	1000	2500	5000	10000	15000	20000
+Hadoop	79.45	79.5	79.42	79.44	81.48	82.39	87.47
+Hive	532.01	531.55	534.16	537	543.51	543.95	543.64
+MySQL	4.2	13.83333333	85.41666667	392.4166667	1518.176667	1390.246667	2367.813333
+
+

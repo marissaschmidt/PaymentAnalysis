@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+
+<!--
+Boise State University
+Computer Science Department
+
+Author:  Marissa Hollingsworth
+Project: Master's Project
+Date:    Fall 2011
+-->
+
+<project name="mapreduce-pa" basedir="." default="jar">
+	
+	<!-- default properties -->	
+	<property name="Name" value="MapReduce-PaymentAnalysis"/>
+	<property name="name" value="mapreduce-pa"/>
+	<property name="version" value="mholling"/>
+ 	<tstamp>
+ 	  <format property="current.time"
+ 	          pattern="yyyyMMdd_HHmmss" />
+ 	</tstamp>
+	<property name="final.name" value="${name}_${current.time}"/>
+
+	<property name="src.dir" value="${basedir}/src"/>
+	<property name="lib.dir" value="${basedir}/lib"/>
+	<property name="docs.src.dir" value="${src.dir}/docs"/>
+
+	<property name="build.dir" value="${basedir}/build"/>
+	<property name="build.classes" value="${build.dir}/classes"/>
+	<property name="build.src" value="${build.dir}/src"/>
+	<property name="build.test" value="${build.dir}/test"/>
+	<property name="build.docs" value="${build.dir}/docs"/>
+	<property name="build.javadoc" value="${build.docs}/api"/>
+
+	<property name="test.src.dir" value="${basedir}/src/test"/>
+	<property name="test.lib.dir" value="${basedir}/src/test/lib"/>
+	<property name="test.build.dir" value="${build.dir}/test"/>
+	<property name="test.generated.dir" value="${test.build.dir}/src"/>
+	<property name="test.build.data" value="${test.build.dir}/data"/>
+	<property name="test.debug.data" value="${test.build.dir}/debug"/>
+	<property name="test.log.dir" value="${test.build.dir}/logs"/>
+  	<property name="test.build.classes" value="${test.build.dir}/classes"/>
+    	<property name="test.build.testjar" value="${test.build.dir}/testjar"/>
+	
+	<property name="javac.debug" value="on"/>
+	<property name="javac.optimize" value="on"/>
+	<property name="javac.args" value=""/>
+
+	<!-- the normal classpath -->
+	<path id="classpath">
+	  <pathelement location="${build.classes}"/>
+	  <fileset dir="${lib.dir}">
+	    <include name="**/*.jar" />
+	    <exclude name="**/excluded/" />
+	  </fileset>
+	</path>
+	
+	<!-- the unit test classpath: uses test.src.dir -->
+	<path id="test.classpath">
+	  <pathelement location="${test.build.classes}"/>
+	  <pathelement location="${test.src.dir}"/>
+	  <pathelement location="$build.dir}"/>
+	  <fileset dir="${test.lib.dir}">
+	    <include name="**/*.jar" />
+	    <exclude name="**/excluded/" />
+	  </fileset>
+	  <path refid="classpath"/>
+	</path>
+	
+	<!-- ======================================================== -->
+	<!-- Stuff needed by all targets                              -->
+	<!-- ======================================================== -->
+	<target name="init">
+	  <mkdir dir="${build.dir}"/>
+	  <mkdir dir="${build.classes}"/>
+	  <mkdir dir="${build.src}"/>
+		
+	  <mkdir dir="${test.build.dir}"/>
+	  <mkdir dir="${test.build.classes}"/>
+	  <mkdir dir="${test.build.testjar}"/>
+	</target>
+
+	<!-- ======================================================== -->
+	<!-- Compile the Java files                                   -->
+	<!-- ======================================================== -->
+	<target name="compile" depends="init">
+	  <javac 
+	    srcdir="${src.dir}" 
+	    includes="**/*.java"
+		excludes="old/*.java"
+	    destdir="${build.classes}"
+	    debug="${javac.debug}"
+	    optimize="${javac.optimize}">
+	    <compilerarg line="${javac.args}"/>
+	    <classpath refid="classpath"/>
+	  </javac>
+	</target>
+
+        <!-- ======================================================== -->
+	<!-- Make payment-analysis.jar                                -->
+	<!-- ======================================================== -->
+	<!--<target name="jar" depends="compile" description="Make payment-analysis.jar">
+	  <jar jarfile="${build.dir}/${final.name}.jar"
+	       basedir="${build.classes}">
+	    <manifest>
+	      <section name="bsu/mscs/mholling/proj">
+	        <attribute name="Implementation-Title" value="${Name}"/>
+		<attribute name="Implementation-Version" value="${date}"/>
+		<attribute name="Implementation-Organization" value="BSU CS Department"/>
+	      </section>
+	    </manifest>
+	  </jar>
+	</target>
+        -->
+
+	<!-- ======================================================== -->
+	<!-- Make PaymentAnalysis main jar                            -->
+	<!-- ======================================================== -->
+	<target name="main-jar" depends="compile">
+	  <jar jarfile="${build.dir}/${final.name}-main.jar"
+	       basedir="${build.classes}">
+	    <manifest>
+	      <attribute name="Main-Class" 
+	                 value="stats.PaymentAnalysisBetter" />
+	    </manifest>
+	  </jar>
+	</target>
+	
+	<!-- ======================================================== -->
+	<!-- Make account historgram jar                              -->
+	<!-- ======================================================== -->
+	<target name="histo-jar" depends="compile">
+	  <jar jarfile="${build.dir}/${final.name}-histogen.jar"
+	       basedir="${build.classes}">
+	    <manifest>
+	      <attribute name="Main-Class" 
+	                 value="gen.HistogramGen" />
+	    </manifest>
+	  </jar>
+	</target>	
+
+
+	<!-- ======================================================== -->
+	<!-- Make account generation jar                              -->
+	<!-- ======================================================== -->	
+	<target name="gen-jar" depends="compile">
+	  <jar jarfile="${build.dir}/${final.name}-accountgen.jar"
+	       basedir="${build.classes}">
+	      <manifest>
+	        <attribute name="Main-Class" 
+	                   value="gen.AccountGen" />
+	      </manifest>
+	  </jar>
+	</target>
+
+	<target name="jar" depends="compile, main-jar, histo-jar, gen-jar"/>
+
+	<!-- ======================================================== -->
+	<!-- Clean 			                              -->
+	<!-- ======================================================== -->	
+	<target name="clean" depends="">
+		<delete dir="${build.dir}"/>
+	</target>
+</project>

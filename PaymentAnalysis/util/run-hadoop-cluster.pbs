@@ -1,0 +1,42 @@
+#!/bin/sh
+#PBS -l nodes=1:master+4:node
+#PBS -N HDFS
+#PBS -m be
+#PBS -l walltime=12:00:00
+#
+# This is a PBS job submission script. It asks for the master
+# node and 8 nodes in the PBS cluster to run the Hadoop cluster
+# on.
+#
+# HADOOP_HOME should be set to the base directory of your Hadoop
+# installation.
+#--------------------------------------------------------------
+if [ "$HADOOP_HOME" = "" ]; then
+export HADOOP_HOME=$HOME/hadoop-install/hadoop
+fi
+log=run-hadoop-cluster.log
+
+cd ${HADOOP_HOME}/conf
+./cluster-remove.sh >> ${log} <<END
+y
+END
+
+echo "Cluster removed. Setting up new cluster..."
+./cluster-setup.sh >> ${log}
+
+echo ------------------------------------------------------ >> ${log}
+echo -n 'Job is running on node '; cat $PBS_NODEFILE >> ${log}
+echo ------------------------------------------------------ >> ${log}
+echo PBS: qsub is running on $PBS_O_HOST >> ${log}
+echo PBS: originating queue is $PBS_O_QUEUE >> ${log}
+echo PBS: executing queue is $PBS_QUEUE >> ${log}
+echo PBS: working directory is $PBS_O_WORKDIR >> ${log}
+echo PBS: execution mode is $PBS_ENVIRONMENT >> ${log}
+echo PBS: job identifier is $PBS_JOBID >> ${log}
+echo PBS: job name is $PBS_JOBNAME >> ${log}
+echo PBS: node file is $PBS_NODEFILE  >> ${log}
+echo PBS: current home directory is $PBS_O_HOME >> ${log}
+echo PBS: PATH = $PBS_O_PATH >> ${log}
+echo ------------------------------------------------------ >> ${log}
+
+sleep 3d

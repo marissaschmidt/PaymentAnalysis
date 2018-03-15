@@ -1,0 +1,177 @@
+% The \documentclass command is the first command in a LaTeX file.
+% \documentclass{bsu-ms}
+\documentclass[project,Amit]{bsu-ms}  % for project reports
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+
+% The 'graphicx' package is quite extensive; the main purpose here is
+% the includion of PostScript graphics.  The 'dvips' option makes it work
+% better with 'dvips' (which is what is often used under Linux)
+\usepackage[pdftex]{graphicx}
+
+% The 'ulem' package is used to underline with dotted or dashed line.
+\usepackage[normalem]{ulem}
+\def\dotuline{\bgroup 
+  \ifdim\ULdepth=\maxdimen  % Set depth based on font, if not set already
+   \settodepth\ULdepth{(j}\advance\ULdepth.4pt\fi
+  \markoverwith{\begingroup
+  \advance\ULdepth0.08ex
+  \lower\ULdepth\hbox{\kern.15em .\kern.1em}%
+  \endgroup}\ULon}
+\def\dashuline{\bgroup 
+  \ifdim\ULdepth=\maxdimen  % Set depth based on font, if not set already
+   \settodepth\ULdepth{(j}\advance\ULdepth.2pt\fi
+  \markoverwith{\kern.10em
+  \vtop{\kern\ULdepth \hrule width .2em}%
+  \kern.10em}\ULon}
+
+% The 'subfigure' package does a nice job handling and labelling subfigures
+\usepackage{subfig}
+\usepackage{url}
+\usepackage{citesort}
+
+\usepackage{enumitem}
+\setlist{nolistsep}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local commands
+
+% Define your macros (new commands) here.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Front Matter Definitions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% These definitions are used by the commands below to construct the front 
+% matter pages.  
+
+% Document title
+% The \titleBreak command produces a line break in the title on the
+% title page (this may be necessary to keep longer titles from looking
+% strange)
+\title{Hadoop and Hive as Scalable alternatives to RDBMS: A Case Study}  
+\author{Marissa Rae Hollingsworth}  
+
+\graduationDay{13}
+\graduationMonth{August}
+\graduationYear{2012} 
+
+\advisor{Amit Jain} % also the chair of your committee
+\committeeA{Murali Medidi} 
+\committeeB{Jyh-haw Yeh}
+\degree{Master of Science}
+\major{Computer Science}
+\department{Computer Science}
+\college{Engineering}
+\departmentChair{Murali Medidi}
+\graduateDean{John R. Pelton}
+
+\abstract
+{ 
+While high-performance, cost-effective data management solutions, such as Hadoop, exist for Big Data analysis, small and medium businesses with moderate-sized data sets would also like to implement low budget data management systems that will perform well on existing data and scale as the amount of accumulated data increases. Parallel database management systems may provide a high-performance solution, but are expensive and complex to implement. The purpose of this project was to compare the scalability of open-source relational database management systems and distributed data management systems for small and medium data sets. To make this comparison, a business intelligence case study was investigated using three data management solutions: MySQL, Hadoop MapReduce, and Hive. This experiment involved a payment history analysis which considers customer, account, and transaction data for predictive analytics. Experiments were executed on data sets ranging from 200MB to 10GB. The results show that the single server MySQL solution performs best for trial sizes ranging from 200MB to 1GB, but does not scale well beyond that. MapReduce outperforms MySQL on data sets larger than 1GB and Hive outperforms MySQL on sets larger than 2GB. This demonstrates MapReduce and Hive as viable techniques for small and medium businesses who want to implement scalable data management techniques.
+}
+
+\includeCopyright
+
+\maxPage{199}
+
+\acknowledgments{
+I would like to thank my advisor, Dr. Amit Jain, for the dedication and encouragement he gave during both my undergraduate and graduate studies at Boise State University. I would also like to thank my committee members, Dr. Murali Medidi and Dr. Jyh-haw Yeh, Dave Arnett and Vince Martino for the guidance they provided. And finally, I would like to thank my family and friends for their encouragement, love and support; I could not have done this without them. 
+}
+
+\dedication{
+For Nathan.
+}
+
+\biosketch{
+Marissa Hollingsworth was born in Carlsbad, California and moved to Boise, Idaho in 2004. She graduated from Skyview High School in 2004 and attended Boise State University for her undergraduate career. She graduated from Boise State with a Bachelor of Science degree in Computer Science in 2009 and began her graduate studies at Boise State University immediately after, working as a graduate teaching assistant for the computer science department. In June of 2011, she began her career as a Software Design Engineer at HP Indigo in Boise, where she is currently employed.
+}
+
+% (End of preamble)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\frontmatter  %! Do not remove! 
+\buildFrontPages %! Do not remove! 
+
+% The (optional) list of abbreviations goes here
+% \begin{listAbbreviations}
+%   \item[RDBMS] Relational Database Management System
+% \end{listAbbreviations}
+
+% The (optional) list of symbols goes here
+% \begin{listSymbols}
+%   \item[$\sqrt{2}$] square root of 2
+%   \item[$\lambda$] lambda symbol, normally used in lambda calculus but
+%     it sometimes gets used for wavelength as well
+% \end{listSymbols}
+
+\mainmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Introduction
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{./chapter-1-introduction.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Business Intelligence and Data Warehousing
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{./chapter-2-background.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Case Study: Payment Analysis for Business Intelligence
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{./chapter-3-problem.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Hadoop MapReduce and Hive Solution
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{./chapter-4-solution.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Results and Conclusions
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{./chapter-5-results.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Conclusion
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{./chapter-6-conclusion.tex}
+
+\backmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Bibilography
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% There are different bibliography styles; 'plain' is used for theses.
+\bibliographystyle{plain}
+\bibliography{marissa-hollingsworth-project}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Appendix
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+
+\input{./appendix-payment-analysis-data-model.tex}
+
+\input{./appendix-cluster-configuration.tex}
+
+\input{./appendix-hive-solution.tex}
+
+\finish  %! Do not remove!
+
+\end{document}

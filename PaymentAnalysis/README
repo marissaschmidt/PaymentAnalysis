@@ -1,0 +1,60 @@
+To build:
+
+export CLASSPATH=$HADOOP_HOME/hadoop-0.20.2-core.jar:$HADOOP_HOME/lib/commons-cli-1.2.jar:$CLASSPATH
+ant jar
+
+This will generate the following jar files:
+
+
+account-statistics.jar
+accounts-per-customer.jar
+customers-per-ssn.jar
+accounts-per-ssn.jar
+payment-analysis.jar
+
+To run:
+
+===============================================================================
+PaymentAnalysis.io
+===============================================================================
+Account.java  
+  A WritableComparable for Account objects. 
+
+Customer.java
+  A WritableComparable for Customer objects. 
+
+EventWritable.java
+  A WritableComparable for Account events (e.g. Transactions, Strategy History)
+
+Transaction.java
+  An EventWritable for Account Transactions.
+
+StrategyHistory.java
+  An EventWritable for Account Strategy History events.
+
+AccountArrayWritable.java
+  A WritableComparable for an array of Account objects.
+
+DateWritable.java
+  A WritableComparable for Date objects.
+
+===============================================================================
+PaymentAnalysis.stats
+===============================================================================
+StatisticsPerAccount.java
+	MapReduce job to aggregate transaction totals per account.
+	
+AccountsPerCustomer.java
+	MapReduce job to combine account statistics and account information per 
+	account and output result per customer number. 
+
+CustomersPerSsn.java
+	MapReduce job to combine past accounts of each customer and output the 
+	result by ssn of the customer. 
+
+AccountsPerSsn.java
+	MapReduce job to group the accounts by ssn in order to calculate the 
+	previous account values for each account. 
+===============================================================================
+PaymentAnalysis.test
+===============================================================================

@@ -1,0 +1,28 @@
+These tests were performed on varied settings of the following properties
+in mapred_config.xml:
+
+mapred.map.tasks.maximum
+mapred.map.tasks
+mapred.reduce.tasks.maximum
+
+test, node_count, map_tasks, account_count, data_size(kb), runtime(secs)
+hadoop_172425, 4, 16, 500, 238499, 93.74
+hadoop_172635, 4, 16, 1000, 487590, 99.78
+hadoop_172849, 4, 16, 2500, 1210833, 99.74
+hadoop_173105, 4, 16, 5000, 2409557, 102.75
+hadoop_173323, 4, 16, 10000, 4838749, 105.73
+hadoop_173544, 4, 16, 20000, 9625210, 120.77
+
+hadoop_174435, 4, 8, 500, 250303, 78.69
+hadoop_174623, 4, 8, 1000, 479147, 79.57
+hadoop_174814, 4, 8, 2500, 1206650, 78.50
+hadoop_175002, 4, 8, 5000, 2439648, 82.51
+hadoop_175157, 4, 8, 10000, 4797904, 84.51
+hadoop_175350, 4, 8, 20000, 9674987, 88.55
+
+hadoop_183520, 4, 4, 500, 242316, 72.57
+hadoop_183702, 4, 4, 1000, 483810, 75.56
+hadoop_183845, 4, 4, 2500, 1201313, 75.53
+hadoop_184029, 4, 4, 5000, 2420935, 76.48
+hadoop_184215, 4, 4, 10000, 4849763, 76.51
+hadoop_184400, 4, 4, 20000, 9677155, 81.51

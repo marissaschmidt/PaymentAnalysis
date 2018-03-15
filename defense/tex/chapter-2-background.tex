@@ -1,0 +1,61 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Business Intelligence and Data Warehousing
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Background}\label{ch:background}
+\section{Business Intelligence}
+BI aims to support decision-making for an organization. As digital information becomes more prevalent, service providers are seeking guidance as to how they can leverage the data they collect to improve their knowledge base for incorporating new strategies into their business. BI technologies provide historical, current and predictive views of business operations; BI software is designed to perform a wide variety of such functions, ranging from online analytical processing, to business performance management, to data, process, and text mining. 
+
+Until recently, the focus for data analysis had been on large enterprises with vast amounts of data. However, a major problem faced by SMBs in today's economy is their lack of management expertise and financial reporting that investors need to make decisions about whether or not to invest \cite{Newberry}. More than one-quarter of SMBs indicated that ``getting better insights from the data'' they have is a top technology challenge \cite{smbroutes}. Overcoming this mode of challenges places crucial importance on the ability to implement a scalable BI solution based on the available data and thereby provide a means to acquire valuable insights into business trends.
+
+In general, a BI system comprises three essential and distinct components, namely \textit{data sources}, \textit{data warehousing}, and \textit{analytics}. Data may be sourced from a diverse set of entities, which may be external (i.e. industry reports, media data, business partners, etc.) and/or internal (i.e. account transactions, employee reports, client reports, etc.). Data sets used for BI is typically defined as Big Data and may be unstructured and complex. Data warehousing is essential to an effective BI system and should be disjoint from the operational data storage required for day-to-day business operations. In this context, a data warehouse contains a historical data store designed to manage data accumulated over time and an analytical data store designed to manage and make available a subset of the historical store for predictive analysis. Finally, the analytics component includes the software tools which access the analytical data store and instrument the prediction procedure(s).
+
+In the initial BI development stages it is typical for businesses to use a RDBMS for \textit{both} operational and data warehousing. When the data sets are small, this strategy is beneficial because the approach is relatively simple, efficient, and cost-effective. However, as time progresses and accumulated data increases, this ``one size fits all'' approach does not work well with BI analysis, largely due to the underlying architecture of the database~\cite{stonebraker,jacobs2009pathologies}. ``To achieve acceptable performance for highly order-dependent queries on truly large data, one must be willing to consider abandoning the purely relational database model for one that recognizes the concept of inherent ordering of data down to the implementation level''~\cite{jacobs2009pathologies}. Distributed solutions designed to manage big data, such as the Apache Hadoop project, are adopted to meet these new requirements. The following sections provide background information on the RDBMS and big data analysis techniques used in our research-- MySQL and Apache Hadoop, respectively.
+
+\section{Relational Database Management Systems}
+The relational database is the most popular database model used for the storage and access of operational data that is optimized for real-time queries on relatively small data sets. Data is organized as a set of formally-described tables whose fields are represented as columns and records are represented as rows in the table~\cite{codd1970relational}. A RDBMS is the software which controls the storage, retrieval, deletion, security, and integrity of data within a relational database~\cite{amblers}. Data can be accessed and reassembled in several ways for both interactive queries and gathering data for reports via structured query language (SQL) operations based on relational algebra.
+
+\subsection{MySQL}
+MySQL Community Edition is the free version of ``the world's most popular'' open-source RDBMS implementations that is supported by a huge and active community of open source developers. MySQL supports many standard DBMS features including replication, partitioning, stored procedures, views, MySQL Connectors for building applications in multiple languages, and the MySQL Workbench for visual modeling, SQL development and administration~\cite{mysql}. Many organizations such as Facebook, Google, Adobe, and Zappos use MySQL to power high-volume web sites, business-critical systems and packaged software.
+
+A typical MySQL deployment includes a server installed on a single, high-end server which accepts local and remote client queries. Since the database is limited to the hard drives of the server, when the amount of data exceeds the limited storage capacity, this model will fail and a DBMS with an underlying distributed storage system will need to be employed.
+%===============================================================================
+% Section: Distributed: Apache Hadoop
+%===============================================================================
+\section{Big Data Analytics}
+While the RDBMS model is well suited and optimized for real-time queries on relatively small data sets, it was \textit{not} designed for Big Data analysis, largely due to the limited storage capacities and the underlying write-optimized ``row-store'' architecture~\cite{stonebraker}. While write-optimization allows for efficient data import and updates, the design limits the achievable performance of historical data analysis that requires optimized read access for large amounts of data. Another drawback of the RDBMS approach stems from the lack of scalability as the number of stored records expands. To overcome this obstacle, we can move data to a parallel DBMS system. 
+
+Parallel DBMSs share the same capabilities as traditional RDMBSs, but run on a cluster of commodity systems where the distribution of data is transparent to the end user~\cite{pavlo}. Parallel RDBMSs have been commercially available for several decades and offer high performance and high availability, but are much more expensive than single-node RDBMSs because there are no freely available implementations and they have much higher up-front costs in terms of hardware, installation, and configuration~\cite{stonebraker2010mapreduce}. In contrast, Hadoop can can be deployed on a cluster of low-end systems and provides a cost-effective, ``out-of-the-box'' solution for Big Data analysis.  While some parallel DBMSs may have relative performance advantages over open-source systems, such as Hadoop, the set-up cost and cost to scale may deter SMBs from using them. Furthermore, Hadoop is better suited for BI analysis because it allows for the storage and analysis of unstructured data, while parallel DBMSs force the user to define a database schema for structured data~\cite{pavlo}.
+
+\subsection{Hadoop Distributed Filesystem}
+Hadoop is an open-source Java implementation of the MapReduce framework developed by Google. The Apache Software Foundation and Yahoo! released the
+first version in 2004 and continue to extend the framework with new sub-projects. Hadoop provides several open-source projects for reliable, scalable, and distributed computing~\cite{hadoop}. Our project will use the Hadoop Distributed Filesystem (HDFS)~\cite{hdfs}, Hadoop MapReduce~\cite{mapreduce}, and Hive~\cite{hive}.
+
+The Hadoop Distributed Filesystem (HDFS) is a scalable distributed filesystem that provides high-throughput access to application data~\cite{hdfs}. HDFS is written in the Java programming language. A HDFS cluster operates in a master-slave pattern, consisting of a master \textit{namenode} and any number of slave \textit{datanodes}. The namenode is responsible for managing the filesystem tree, the metadata for all the files and directories stored in the tree, and the locations of all blocks stored on the datanodes. Datanodes are responsible for storing and retrieving blocks when the namenode or clients request them.
+
+\subsection{MapReduce}\label{sec:mapreduce}
+MapReduce is a programming model on top of HDFS for processing and generating large data sets which was developed as an abstraction of the \textit{map} and \textit{reduce} primitives present in many functional languages~\cite{mapreduce,Dean:2008:MSD:1327452.1327492}.  The abstraction of parallelization, fault tolerance, data distribution and load balancing allows users to parallelize large computations easily. The map and reduce model works well for Big Data analysis because it is inherently parallel and can easily handle data sets spanning across multiple machines.
+
+Each MapReduce program runs in two main phases: the map phase followed by the reduce phase. The programmer simply defines the functions for each phase and Hadoop handles the data aggregation, sorting, and message passing between nodes.There can be multiple map and reduce phases in a single data analysis
+program with possible dependencies between them. 
+\begin{description}
+ \item[Map Phase.] The input to the map phase is the raw data. A map function
+should prepare the data for input to the reducer by mapping the key to the the
+value for each ``line'' of input. The key-value pairs output by the map function
+are sorted and grouped by key before being sent to the reduce phase. 
+ \item[Reduce Phase.] The input to the reduce phase is the output from the map
+phase, where the value is an iterable list of the values with matching keys.
+The reduce function should iterate through the list and perform some operation
+on the data before outputting the final result. 
+ \end{description}
+
+%-------------------------------------------------------------------------------
+% Subsection: Hive
+%-------------------------------------------------------------------------------
+\subsection{Hive}
+While the MapReduce framework provides scalability and low-level flexibility to run complex jobs on large data sets, it may take several hours or even days to implement a single MapReduce job~\cite{thusoo}. Recognizing this, Facebook developed Hive based on familiar concepts of tables, columns and partitions, providing a high-level query tool for accessing data from their existing Hadoop warehouses~\cite{thusoo}.  The result is a data warehouse layer built on top of Hadoop that allows for querying and managing structured data using a familiar SQL-like query language, HiveQL, and optional custom MapReduce scripts that may be plugged into queries~\cite{hive,thusoo2}. Hive converts HiveQL transformations to a series of MapReduce jobs and HDFS operations and applies several optimizations during the compilation process. 
+
+The Hive data model is organized into \textit{tables}, \textit{partitions} and \textit{buckets}. The \textit{tables} are similar to RDBMS tables and each corresponds to an HDFS directory. Each table can be divided into \textit{partition}s that correspond to sub-directories within an HDFS table directory and each partition can be further divided into \textit{buckets} which are stored as files within the HDFS directories~\cite{thusoo2}. 
+
+It is important to note that Hive was designed for scalability, extensibility, and batch job handling, \textit{not} for low latency performance or real-time queries. Hive query response times for even the smallest jobs can be of the order of several minutes and for larger jobs, may be on the order of several hours~\cite{hive}.

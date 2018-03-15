@@ -1,0 +1,10 @@
+In simplest terms, the phrase refers to the tools, processes and procedures
+allowing an organization to create, manipulate, and manage very large data 
+sets and storage facilities. Does this mean terabytes, petabytes or even 
+larger collections of data? The answer offered by these suppliers is “yes.”
+
+ A component of the Apache Hadoop data processing framework, Apache Hive is open
+source software for running data warehouse-styled operations against large
+datasets stored in Hadoop file systems. It provides such operations as data
+summarization, ad-hoc querying, and analysis. Volunteer developers from
+Cloudera, Facebook and other companies contribute to the code-base.

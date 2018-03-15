@@ -1,0 +1,12 @@
+Number of accounts: 250000
+hadoop_215534, 4, 120823620, 174.84
+
+Number of accounts: 250000
+hadoop_215914, 4, 120921121, 177.81
+
+Number of accounts: 250000
+hadoop_220603, 16, 120984019, 162.19
+
+Number of accounts: 250000
+hadoop_220948, 16, 120889714, 169.07
+

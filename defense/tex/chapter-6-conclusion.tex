@@ -1,0 +1,46 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Chapter: Conclusion
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\chapter{Conclusion} \label{ch:conclusion}
+In this chapter we conclude by summarizing our findings, listing implications and suggesting future directions for CompanyX.
+
+\section{Summary}
+In Chapter ~\ref{ch:intro} we started by introducing the concepts of this research project. We provided brief summary of BI, listed various data access and storage obstacles for SMBs, and highlighted the importance of conducting this OSS database management investigation.
+
+In Chapter~\ref{ch:background} we provided a background for concepts pertaining to BI storage, access, and analytical systems. Here, we outlined some major challenges faced by SMBs interested in BI analytics and discuss RDBMS and alternative DDBMS solutions. We summarized the notion of Big Data, a likely future obstacle for the SMB, and provided relevant information regarding the Hadoop solutions considered in this research: MapReduce and Hive.
+
+In Chapter~\ref{ch:problem} we introduced the payment history analysis case study for a specific SMB. We explained how this particular SMB designs software tools to analyze current and historical payment habits on customer data and attempts forecast trends. We discussed the database management challenges faced by the SMB as their customer base expands and defined their specific case study. Here, we explained their data storage and access models, along with the requisite test data set generation utilities required to conduct the analysis. In doing so, we formally presented the problem statement and list the inquiries we wish to address in this research project.
+
+In Chapter~\ref{ch:solution} we defined the design and implementation for the RDBMS and DDBMS solutions. First, we discussed the detailed process of generating the test data set and provided a summarized description of the key algorithms and data structures employed by these utilities: the \texttt{HistogramGen} and \texttt{AccountGen} MapReduce programs. Second, we discussed the central components of the MySQL, Hadoop MapReduce, and Hadoop Hive solution implementation, where we explained the process by which they are used to instrument the payment history analysis case study (as presented in Chapter~\ref{ch:problem}).
+
+In Chapter~\ref{ch:results} we detailed the RDBMS and DDMS performance comparison experiment (for the solutions of Chapter~\ref{ch:solution}). Here, we discussed the efficiency and scalability for these implementations, along with the resulting implications and analysis for this SMB's data management case study (as expressed in Chapter~\ref{ch:problem}). First, we discussed the software and hardware environment in which our comparative benchmark analysis is conducted. Second, we provided the procedure used to guide and execute the experiment. Finally, we presented the performance results for the various experimental trial runs: to summarize, we observed that the MapReduce solution outperforms its competitors for the case study.
+
+\section{Results and Implications}
+From the payment history analysis performance comparison between MySQL, MapReduce and Hive, we conclude that:
+
+\begin{enumerate}
+  \item MySQL performs the best for trial sizes ranging from 500 to 2,500 accounts, but does not scale well beyond that,
+  \item Hive performance remained constant for all trial sizes, matching and surpassing MySQL performance at 5,000 accounts,
+  \item MapReduce outperformed Hive and remained constant for all trial sizes, matching and surpassing MySQL at 2,500 accounts.
+\end{enumerate}
+
+Our results indicate that MapReduce is the best candidate for this case study. Therefore, we recommend that CompanyX deploy this type of distributed warehousing solution for their BI predictive analytics. 
+
+\section{Future Direction}
+Beyond the scope of this project, it would be interesting to investigate RDBMS and DDMS implementations further. 
+
+\begin{itemize}
+ \item \textbf{RDBMS}
+  \begin{enumerate}
+   \item Benchmark performance of several RDBMS implementations including MySQL Enterprise edition, Microsoft SQLServer, PostresQL, and Oracle.
+   \item Investigate the performance ratio of parallel database solutions.
+  \end{enumerate}
+ \item \textbf{DDMS}
+  \begin{enumerate}
+   \item MapReduce-- test on several cluster environments, implement and compare performance on varied account complexity
+   \item Hive-- perform payment analysis benchmarks on various cluster configurations and account data
+  \end{enumerate}
+\end{itemize}

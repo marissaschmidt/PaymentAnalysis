@@ -1,0 +1,25 @@
+This compressed folder contains the following documents:
+
+Index.txt
+ - This document
+
+AmitCustomer.csv
+ - Comma Separated Values file containing data for AmitCustomer table
+
+AmitAccount.csv
+ - Comma Separated Values file containing data for AmitAccount table
+
+AmitTransaction.csv
+ - Comma Separated Values file containing data for AmitTransaction table
+
+AmitStrategyHistory.csv
+ - Comma Separated Values file containing data for AmitStrategyHistory table
+
+Amit Data Dictionary.xlsx
+ - Microsoft Excel file with definitions for each field in the desired output file
+
+Amit File.csv
+ - Comma Separated Values file containing the expected results for the desired output file
+
+AmitFile.sql
+ - SQL script used to pull expected results for the desired output file from tables

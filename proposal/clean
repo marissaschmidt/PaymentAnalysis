@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rm -fr *.aux *.lof *.log *.lot *.pdf *.toc *.dvi *.bbl *.blg *.out

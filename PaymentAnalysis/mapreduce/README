@@ -1,0 +1,6 @@
+To build:
+==========================
+Run the ant command to run default build target.
+
+$ ant
+==========================

@@ -1,0 +1,16 @@
+#!/bin/sh
+#PBS -l nodes=1:master+1:node
+#PBS -m be
+#PBS -l walltime=12:00:00
+# This is a PBS job submission script. It asks for the master node 
+# and 16 nodes in the PBS cluster to run the PVM application on.
+#
+# IMPORTANT NOTE:  Be sure to modify the "cd" command below to switch
+# to the directory in which you are currently working!  
+#
+#------------------------------------------------------------------------
+cd /home/students/mholling/project/PaymentAnalysis/test
+
+results="perf/results/results_250000accounts.txt"
+
+run-performance-tests.sh 250000 ${results}

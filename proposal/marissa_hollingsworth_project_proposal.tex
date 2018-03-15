@@ -1,0 +1,636 @@
+\documentclass[letterpaper,12pt,titlepage]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\usepackage{stfloats}
+\usepackage{setspace}
+
+% In case you need to adjust margins:
+\topmargin=-0.45in      %
+\evensidemargin=0in     %
+\oddsidemargin= 0in      %
+\textwidth=6.25in        %
+\textheight=8.5in       %
+\headsep=0.25in         %
+
+\onehalfspacing
+
+%-------------------------------------------------------------------------------
+% Proposal for Project: 
+% 
+% The motivation should provide necessary background and then argue that a
+% significant piece of work (usually a piece of software) is needed. The
+% project statement should concisely describe the work. The method section
+% should describe the requirements and expectations for the finished product
+% and explain what will be done to assure the quality of the work. The annotated
+% bibliography should convince the reader that the student is well acquainted
+% with techniques needed to do the work and with techniques others have used to
+% solve similar problems. The contributions should reflect the importance of the
+% work. It is important to discuss how the work will be disseminated to others.
+%-------------------------------------------------------------------------------
+
+%opening
+\title{Hadoop and Hive as scalable alternatives to DBMS business intelligence
+solutions for Big Data.}
+\author{Marissa R. Hollingsworth}
+
+\begin{document}
+
+\maketitle
+
+%-------------------------------------------------------------------------------
+% Introduction - introduces the work to be done so it can be reasonably well
+% 	understood by a faculty member not working in the research area.
+%-------------------------------------------------------------------------------
+\section{Introduction}
+The persistent evolution of digital technologies and ever-increasing
+generation, acquisition and storage of digital information allows enterprise
+and research organizations to uncover novel insights into information that were
+previously impossible to decode. The amount of digital information generated
+(and replicated) by individuals on the internet, governments, organizations,
+research laboratories, and both enterprise and small businesses continues to
+increase at an annual compound rate of about 60\%~\cite{monstrous}\cite{emc}.
+In 2009, the amount of digital information worldwide reached a record of 800
+\textit{billion} gigabytes and according to an IDC study, the amount of digital
+information generated in 2010 was an estimated 1,203
+exabytes~\cite{emc}\cite{ohlhorst}, which means approximately 171 gigabytes of
+data per person per year! \textit{This} is what technologists, analysts, and
+executives refer to as \textit{Big Data}. 
+\\\\
+What is the significance of this Big Data explosion? Why do we want
+to store \textit{all} of this digital information? Take, for example, the major
+algorithm used in the Google search engine: Google PageRank. The major success
+of PageRank didn't come from the algorithm itself, but rather from adding
+additional information (hyperlinks and anchortext) to their
+dataset~\cite{pagerank}. This is just one of many cases where ``more
+data...beats better algorithms''~\cite{white}. The success of many large
+corporations such as Google, Yahoo, Microsoft, Wal-mart, Disney, and the New
+York Times, and major research organizations such as the U.S. National
+Aeronautics and Space Administration (NASA), the Sloan Digital Sky Survey, and
+the U.S. National Oceanic and Atmospheric Administration
+(NOAA)~\cite{dataeverywhere}\cite{ohlhorst}, depends on successfully analyzing
+Big Data.
+\\\\
+Until recently the high-cost and challenges presented by the storage,
+accessibility, and scalability of Big Data analysis has discouraged small
+businesses from taking advantage of the business intelligence insights it
+can provide. When data sets fit on a single machine, the traditional methods of
+storing and analyzing data using DBMS are widely available at a relatively low
+cost to setup and manage. However, as data sets grow the cost of the database
+approach increases non-linearly. Hadoop MapReduce is an alternative approach to
+managing data that is linear in cost and can easily handle larger datasets.
+\\\\
+Effective business intelligence solutions greatly benefit from correlations
+between large amounts of archived data from multiple
+databases~\cite{gupta}\cite{stonebraker}. However, the ``one size fits all''
+approach of existing DBMSs does not work well with data analysis, largely
+due to the underlying write-optimized ``row-store''
+architecture~\cite{stonebraker}.
+While write-optimization allows for efficient data import and updates, the
+design limits the achievable performance of historical data analysis that
+requires optimized read access for large amounts of data. 
+\\\\
+Another drawback of the traditional database approach stems from the lack of
+scalability and fault-tolerance as the number of stored records expands. For
+scalability, we can move data to a parallel DBMS system, but a successful
+processing engine for Big Data should be easily scalable, fault-tolerant and
+must have some elements of a DBMS, an application server (to efficiently process
+data in parallel) and a message passing system (for distributed storage access
+and data processing)~\cite{gupta}\cite{stonebraker}. While the parallel DBMS
+provides only some of these elements, the Apache Hadoop project provides all of
+the above.
+\\\\
+In their research, Pavlo et al. found relative performance advantages of some
+parallel database systems over Hadoop~\cite{pavlo}. However, they also found
+that the ``up-front cost advantage'', ease of set-up and use, and superior
+minimization of lost work due to hardware failure shines in comparison to the
+overhead cost of the databases systems. Since our case study calls for a
+relatively simple and easily scalable solution, we choose to use Hadoop because
+of its low cost, scalability, fault-tolerance and quick retrieval features for
+data management.
+
+\subsection{Hadoop}
+Hadoop provides several open-source projects for reliable, scalable, and
+distributed computing~\cite{hadoop}. Our project will use the
+Hadoop Distributed Filesystem (HDFS)~\cite{hdfs}, Hadoop
+MapReduce~\cite{mapreduce}, and Hive~\cite{hive}.
+
+\subsubsection{MapReduce for Data Processing}
+Hadoop provides a programming model known as MapReduce that abstracts the
+problem into computations over key and value sets~\cite{mapreduce}. The model
+works well with Big Data because it is inherently parallel and can easily handle
+data sets
+spanning across multiple machines. 
+\\\\
+Each MapReduce program runs in two main phases: the map phase followed by the
+reduce phase. The programmer simply defines the functions for each phase and
+Hadoop handles the data aggregation, sorting, and message passing between nodes.
+
+\begin{description}
+ \item[Map Phase.] The input to the map phase is the raw data. A map function
+should prepare the data for input to the reducer by mapping the key to the the
+value for each ``line'' of input. The key-value pairs output by the map function
+are sorted and grouped by key before being sent to the reduce phase. 
+ \item[Reduce Phase.] The input to the reduce phase is the output from the map
+phase, where the value is an iterable list of the values with matching keys.
+The reduce function should iterate through the list and perform some operation
+on the data before outputting the final result. 
+ \end{description}
+There can be multiple map and reduce phases in a single data analysis program
+with possible dependencies between them.
+
+\subsubsection{Hive for Data Warehousing}
+Hive is a data warehouse system for Hadoop that facilitates easy data
+summarization, ad-hoc queries, and the analysis of large datasets stored in
+Hadoop compatible file systems~\cite{hive}. Hive provides a mechanism to project
+structure
+onto this data and query the data using a SQL-like language called HiveQL. At
+the same time this language also allows traditional map/reduce programmers to
+plug in their custom mappers and reducers when it is inconvenient or inefficient
+to express this logic in HiveQL~\cite{hive}.
+
+\subsection{A Big Data Problem: Payment History Analysis}
+Many companies with payment plan options can reduce the amount of resources
+required to collect payments by predicting whether a customer will make their
+payments on-time, late, or never. 
+\\\\
+For this project, we will consider a small, but expanding, company (which we
+will also refer to as our \textit{consultant}) that offers payment plan options
+to its customers so that they can pay for the provided services over time. While
+payment plans benefit both the company and customer by allowing the company to
+provide a service and the customer to use a service without having the funds
+to pay the total charges up front, the company takes the risk of liability for
+late or lost funds due to a customer's inability to pay on-time. However the
+liabilities of these risks can be reduced by using past payment patterns to
+predict whether to expect on-time payment, extend the payment period for the
+customer, or write off charges. These predictions can reduce administrative
+costs such as outsourcing the collection of charges for late-paying customers
+who will eventually pay and keeping records of charges that will never be
+collected. 
+\\\\
+Our consultant has successfully implemented this payment analysis scenario in
+MySQL (see Appendix A), but the company expects to see a significant increase in
+the number of account records as they expand their client base over the next
+year. This is a concern because, as mentioned in previous sections, the DBMS
+model does not scale as the number of accounts increase and will no longer work
+when the data does not fit on a single system. Due to the limited resources
+of the company, the solution must be low-cost and easy to implement and 
+maintain.
+
+%-------------------------------------------------------------------------------
+% Project Statement - a concise statement of the project. e.g. the hypothesis to
+% 	be tested, project to be completed, the question to be answered, etc.
+%-------------------------------------------------------------------------------
+\section{Project Statement}
+The proposed project will study the feasibility of a scalable solution to the
+payment analysis case study while providing a basic model for developing Big
+Data business intelligence applications using Hadoop. The goals of the project
+are as follows.
+\begin{singlespace}
+\begin{itemize}
+  \item Design and implement a scalable business intelligence solution for
+        extracting patterns in customer history data.
+  \item Generate large sample data sets (hundreds of gigabytes) using Hadoop
+        to compare the scalability of the MapReduce solution to the existing
+        MySQL solution.
+  \item Implement and compare several Hadoop I/O techniques to achieve an
+        optimized MapReduce solution. 
+  \item Implement and compare a solution in Hive.
+\end{itemize}
+\end{singlespace}
+The model will include a detailed outline of the design and implementation
+stages followed by a comparison and analysis of the performance, ease of
+implementation, and manageability of the MapReduce, Hive and the original DBMS
+implementations.
+
+%-------------------------------------------------------------------------------
+% Methods - the method to be followed in accomplishing the project statement.
+% 	e.g. algorithms, procedures, sample sizes, expected results, etc.
+%-------------------------------------------------------------------------------
+\section{Methods}
+The development cycle of the proposed project will generally adhere to the
+\textit{Agile} software development model where the design, implementation,
+testing, and analysis phases will occur simultaneously and remain flexible to
+adjustments as the project progresses. The following sections outline the
+primary goals of each phase. 
+
+\subsection{Requirements Phase}
+The majority of the requirements phase will occur before the other phases
+begin. The objectives of this phase are as follows.
+\begin{enumerate}
+ \item Meet with consultant to discuss overall project requirements and
+       specifications.
+ \item Clearly outline the details and constraints of project input and
+      expected output.
+ \item Work with consultant to verify details and constraints before beginning
+       the design phase.
+ \item Consistently verify that the requirements are being met and remain
+       applicable during all phases of the project.
+\end{enumerate}
+% While investigating ideas for this proposal, we began objectives 1 and 2
+% during meetings with our consultant to develop a model for the payment
+% analysis problem.
+\subsection{Design Phase}
+After the project requirements have been finalized, we will enter the
+design phase during which class diagrams, algorithms, and job flows will be
+defined. While the details of these designs will be comprehensive, it is
+important to allow modifications during the implementation, test and analysis
+phases as required. We will blueprint the following components throughout the
+design phase. 
+\begin{itemize}
+ \item \textbf{Custom writable classes}. In order to pass multi-attribute values
+      (\textit{n-tuples}) between map and reduce functions, Hadoop requires that
+      the representing objects implement the \texttt{WritableComparable}
+      interface. We will need to implement \texttt{Writablecomparable}     
+      for the following classes.
+      \begin{enumerate}
+       \item \texttt{Customer} - object representing customer tuple.
+       \item \texttt{Account} - object representing an account tuple.
+       \item \texttt{Transaction} - object representing a transaction tuple.
+       \item \texttt{StrategyHistory} - object representing a strategy history
+	      tuple.
+      \end{enumerate}
+ \item \textbf{MapReduce job flow}. The complexity of the payment analysis
+      problem requires several stages of data aggregation to achieve the final
+      results. We will need to design the details and algorithms to achieve
+      the output for the following jobs.
+
+      \begin{enumerate}
+      \item \texttt{GenerateAccountStatistics} - aggregate transaction totals
+	    per account.
+	    \begin{description}
+	      \item \textbf{input}: all of the \texttt{Transaction} and
+			    \texttt{StrategyHistory} records.
+	      \item \textbf{output}: an object storing the aggregate
+		    adjustment, charge, and payment sums for each account.
+	    \end{description}
+      \item \texttt{AccountsPerCustomer} - group account details by customer.
+	    \begin{description}
+	      \item \textbf{input}: the account details output by the
+		    \texttt{GenerateAccountStatistics} job and the
+		    \texttt{Account} records.
+	      \item \textbf{output}: a \texttt{Customer} object with the
+		    customer attributes and account details per customer.
+	    \end{description}
+      \item \texttt{CustomersPerSsn} - group customer details by social security
+	    number.
+	    \begin{description}
+	      \item \textbf{input}: output from the \texttt{AccountsPerCustomer}
+		    job and the \textit{Customer} records.
+	      \item \textbf{output}: a \texttt{Customer} object containing the
+		    customer attributes and a list of all the accounts owned by
+		    the customer per SSN.
+	    \end{description}
+      \item \texttt{AccountsPerSsn} - group customers by \texttt{SSN} so we
+	    can calculate the previous account values for each account. (A
+	    previous account is defined as an account with OpenDate
+	    prior to this Account's OpenDate which has a Customer with the same
+	    SSN). 
+	    \begin{description}
+	      \item \textbf{input}: output from the \texttt{CustomersPerSsn}
+		    job.
+	      \item \textbf{output}: a new \texttt{Account} object with the
+		    account attributes and previous account attributes set.
+	    \end{description}
+      \end{enumerate}
+ \item \textbf{Hive data set structure}. The schema used to store the
+       data in HDFS can have profound effects on the efficiency of Hive
+	     queries. We will use the implications of Gupta et al.'s research on
+      efficiently querying archived data using Hadoop to design our   
+      storage schema~\cite{gupta}.
+\end{itemize}
+
+\subsection{Implementation Phase}
+We will use the following details as we implement the established program
+design.
+\\\\
+\textbf{Hadoop and Java APIs}. Our implementation of the payment analysis
+application will use the ``old'' Hadoop API (releases prior to
+0.20 series) and the Java 1.6 API. While the new Hadoop API has been released in
+the 0.20 series, we choose not to use it because it is known to be incomplete
+and unstable.
+\\\\
+\textbf{Tools}. The majority of the development will be in Eclipse using
+the MapReduce plug-in for accessing the HDFS. We will use MySQL Workbench to
+load and execute the MySQL version of the payment analysis solution for
+benchmarking.
+\\\\
+\textbf{Implementation steps}. The implementation of the proposed project
+will procede in the following order.
+\begin{enumerate}
+  \item MapReduce solution to the payment analysis case study.
+    \begin{itemize}
+     \item Develop object classes to represent tuples.
+     \item Develop map and reduce functions for each job.
+     \item Chain jobs to achieve final results.
+    \end{itemize}
+  \item Sample data generation for benchmarking the results in the test phase.
+  \item Hive solution to the payment analysis case study. 
+    \begin{itemize}
+      \item Configure the HDFS for use with Hive.
+      \item Translate MySQL solution to the HiveQL dialect.
+    \end{itemize}
+\end{enumerate}
+
+
+\subsection{Test Phase}
+Because we will follow an agile program development model, testing will occur
+throughout the entire development process, using the techniques listed below.
+\begin{itemize}
+  \item \textbf{Unit testing}. To ensure the accuracy of our results as
+        application development progresses, we will maintain a test suite by
+        adding new test cases for each job and object class we develop. Since we
+        have the desired outcome for the payment analysis case study, we will
+        compare the final results of each solution to the expected results.
+  \item \textbf{HDFS cluster setup}. Most testing during development will occur
+        on a pseudo-distributed HDFS cluster. However, when benchmarking the
+        results on large data sets, we will manage and run our results on a
+        fully-distributed HDFS cluster. We will run the benchmark testing on
+        HDFS clusters with varied numbers of data nodes.  
+
+  \item \textbf{Data set generation}. Since we are testing the scalability of
+        our solution for Big Data, we need to generate large data sets; ranging
+        between 10GB and 500GB. 
+\end{itemize}
+% \subsection{Optimizations and Improvements}
+% \subsubsection{Custom Data Types}
+% \subsubsection{Compression}
+% \subsubsection{HIVE}
+
+%-------------------------------------------------------------------------------
+% Project Schedule - a schedule for completion of the project.
+%-------------------------------------------------------------------------------
+\section{Project Schedule}
+\begin{center}
+\begin{tabular}{ | l || p{4.50in} | }\hline
+ December 2010 & - Meet with consultant to define problem.\\\hline
+  January 2011 & - Obtain specification documents and start application design
+		 phase.\\\hline
+ February 2011 & - Solidify application requirements and design.\\
+        \hfill & - Begin implementation and test phases of MapReduce
+                 solution.\\\hline
+    March 2011 & - Finalize MapReduce solution.\\
+        \hfill & - Begin implementation phase of sample data generation.\\\hline
+    April 2011 & - Use sample data to compare MapReduce implementation to MySQL
+		             solution.\\
+        \hfill & - Begin implementation and test phases of Hive solution.\\
+        \hfill &-  Write report sections for MapReduce solution.\\\hline
+      May 2011 & - Finalize Hive solution.\\
+        \hfill & - Use sample data to compare Hive implementation to MapReduce	
+		             and MySQL implementations.\\
+        \hfill & - Write report sections for Hive solution.\\
+        \hfill & - Finalize report.\\\hline
+\end{tabular}
+  
+\end{center}
+
+
+\pagebreak
+%-------------------------------------------------------------------------------
+% Bibliography - a fairly complete bibliography of the area of work.
+%-------------------------------------------------------------------------------
+\begin{singlespace}
+\bibliographystyle{plain}
+\bibliography{marissa_hollingsworth_project_proposal.bib}
+\pagebreak
+\end{singlespace}
+
+\begin{center}
+{\Large \textbf{Appendix A}}\\ 
+{\large Payment Analysis specifications} 
+\end{center}
+\textbf{Input}. Text files containing data extracted from the following tables
+in the existing MySQL database. 
+\begin{itemize}
+    \item \textbf{Customer} - The \textit{CustomerNumber} is unique for
+	  each \textit{Customer}. The \textit{SSN} may be the same for multiple
+	  customers representing the same person. The \textit{ZipCode3} value
+	  represents the first three digits of the customer's zip code. \\\\
+      \begin{tabular}[c]{|l|l|l|l|l|}
+      \hline
+      \multicolumn{5}{|c|}{CUSTOMER} \\
+      \hline
+      CustomerNumber & FirstName & LastName & SSN & ZipCode3 \\
+      \hline
+      \end{tabular}\\
+    \item \textbf{Account} - The \textit{AccountNumber} is unique for each
+	  \textit{Account}. The \textit{CustomerNumber} may be the same for
+	  multiple accounts owned by the same customer. The  
+	  \textit{OpenDate} of the account is the date the account was
+	  opened by the customer.\\\\
+      \begin{tabular}[c]{|l|l|l|}
+      \hline
+      \multicolumn{3}{|c|}{ACCOUNT} \\
+      \hline
+      AccountNumber & OpenDate & CustomerNumber \\
+      \hline
+      \end{tabular}\\
+    \item \textbf{Transaction} - The \textit{AccountNumber} is a foreign key
+	  referencing the \textit{Account} to which the transaction belongs. The
+	  type of transaction is represented by the \textit{TransactionType} and
+	  has a value of \textit{charge}, \textit{adjustment}, or
+	  \textit{payment}. The \textit{TransactionDate},
+	  \textit{TransactionAmount} hold the date and amount of the
+	  transaction.\\\\
+      \begin{tabular}[c]{|l|l|l|l|}
+      \hline
+      \multicolumn{4}{|c|}{TRANSACTION} \\
+      \hline
+      AccountNumber & TransactionDate & TransactionAmount & TransactionType \\
+      \hline
+      \end{tabular}\\
+    \item \textbf{Strategy History} - The \textit{AccountNumber} is a foreign
+	  key referencing the \textit{Account} to which the strategy history
+	  entry belongs. The name of the strategy is represented by
+	  \textit{StrategyName} and has a value of \textit{Good Standing} or
+	  \textit{Bad Debt}. The \textit{StrategyStartDate} is the date the
+	  the account status switched to \textit{StrategyName}.\\\\
+      \begin{tabular}[c]{|l|l|l|} 
+      \hline
+      \multicolumn{3}{|c|}{STRATEGY HISTORY} \\
+      \hline
+      AccountNumber & StrategyName & StrategyStartDate \\
+      \hline
+      \end{tabular}\\
+\end{itemize}
+\pagebreak
+\textbf{Output}. The output of the program will be a table with the following
+entries.
+\begin{itemize} 
+      \item \textit{AccountNumber} - unique Account identifier.
+      \item \textit{OpenDate} - date the Account was opened by Customer.
+      \item \textit{ZipCode3} - first three digits of Customer's zip code.
+      \item \textit{TotalCharges} - sum of all Charge transactions on Account.
+      \item \textit{TotalAdjustments} - sum of all Adjustment transactions on
+	    Account.
+      \item \textit{AdjustedTotalCharges} - sum of TotalCharges and
+	    TotalAdjustments.				
+      \item \textit{TotalGoodStandingPayments30Day} - negative of sum of all
+	    Payment transactions on account between 1 and 30 days after "Good
+	    Standing" Strategy start date but before "Bad Debt" Strategy
+	    start date.
+      \item \textit{TotalGoodStandingPayments60Day} - same as above, but between
+	    1 and 60 days.
+      \item \textit{TotalGoodStandingPayments90Day} - same as above, but between
+	    1 and 90 days.
+      \item \textit{BadDebtTransferBalance} - sum of all transactions on account
+	    up through "Bad Debt" Strategy start date.	
+      \item \textit{TotalBadDebtPayments30Day} - negative sum of all Payment
+	    transactions on account between 1 and 30 days after "Bad Debt"
+	    Strategy start date.
+      \item \textit{TotalBadDebtPayments60Day} - same as above, but between
+	    1 and 60 days.
+      \item \textit{TotalBadDebtPayments90Day} - same as above, but between
+	    1 and 90 days.
+      \item \textit{PreviousAccountCount} - number of Accounts with Open Date
+	    prior to this Account's Open Date which have a Customer with the
+	    same SSN.
+      \item \textit{PreviousAccountGoodStandingCharges} - sum of all Charge
+	    transactions occurring prior to this Account's Open Date on Accounts
+	    which have a Customer with the same SSN (not same account) which
+	    occurred while other Accounts were at or after "Good Standing"
+	    Strategy start date but before other Accounts were at "Bad Debt"
+	    Strategy start date.
+      \item \textit{PreviousAccountGoodStandingAdjustments} - sum of all
+	    Adjustments that occurred during Good Standing strategy for past
+	    accounts.
+      \item \textit{PreviousAccountGoodStandingPayments} - sum of all Payments
+	    that occurred during Good Standing strategy for past accounts.
+      \item \textit{PreviousAccountBadDebtPayments} - sum of all Payments that
+	    occurred during Bad Debt strategy for past accounts.	
+
+\end{itemize}
+\end{document}
+
+
+
+
+% 	Since the input to our program is structured for a relational
+% 	database, we will need to imitate the RDBMS \textit{natural join}
+% 	operator for the input tables using several map and reduce functions.
+% A \textit{natural join} of Customer and
+% Account may look like the following.
+% \begin{verbatim}
+%   map(IntWritable offset, Text line) {
+% 
+%       String[] values = line.toString.split();
+%       String accountNumber = values[COL_ACCOUNT_NUMBER];
+%       String openDate = values[COL_OPEN_DATE];
+%       String customerNumber = values[COL_CUSTOMER_NUMBER];
+%     
+%       output.collect(new TextPair(customerNumber, "0"), 
+%                      new Text(accountNumber + " " + openDate);
+%   }
+% 
+%   map(IntWritable offset, Text line) {
+% 
+%       String[] values = line.toString.split();
+% 
+%       String customerNumber = values[COL_CUSTOMER_NUMBER];
+%       String firstName = values[COL_FIRST_NAME];
+%       String lastName = values[COL_LAST_NAME];
+%       String ssn = values[COL_SSN];
+%       String zipCode3 = values[COL_ZIP];
+% 
+%       output.collect(new TextPair(customerNumber, "1", 
+%                      new Text(firstName + " " + lastName + " " 
+%                               + ssn + " " + zipCode3);
+%   }
+% 
+%   reduce(Text key, Iterator<Text> lines) {
+% 
+%       Text account = new Text(values.next());
+%       while(lines.hasNext()) {
+%           Text customer = values.next();
+%           Text out = new Text(account.toString() + " " + customer.toString())
+%           output.collect(key.getFirst(), out);
+%       }
+%   }
+% 
+% \end{verbatim}
+
+
+% \cite{gupta}
+
+% 
+% Hadoop is the most popular open source
+% implementation of MapReduce framework. It is
+% used for writing applications which process vast
+% amount of data in parallel on large clusters of
+% hardware in a fault-tolerant manner. In Hadoop,
+% data is stored on Hadoop Distributed File System
+% (HDFS) which is a massively distributed file system
+% designed to run on cheap commodity hardware.
+% Hive [2] is a data-warehousing tool developed at
+% Facebook which puts relational structure on the data
+% and gives capability to query and analyze large
+% amount of data stored in HDFS. Hive defines a
+% simple SQL like query language called HQL (Hive
+% query language). Hive uses database schema to
+% convert HQL queries into corresponding
+% MapReduce jobs which are executed on the
+% underlying Hadoop system. Hive is mainly used for
+% log processing, text mining, document indexing,
+% etc.
+% 
+% case. The bad performance of MapReduce can be attributed to
+% large output size of Q1 which leads to lots of data exchange
+% between nodes. Since Map produces large number of records,
+% each Map has to write large amount of data to the disk. Hive
+% performed better than the raw MapReduce as Hive does a better
+% job of optimizing performance using suitable numbers of Map and
+% Reduce jobs. For example, for MapReduce number of maps was 9
+% whereas for Hive it was 35. For other queries implementing raw
+% MapReduce was very cumbersome with each query requiring its
+% custom implementation. Thus, programmers writing raw
+% MapReduce jobs to extract data, and optimizing them for
+% performance, might end-up doing a very bad job. For these
+% queries Hive and MapReduce perform better than SQL and Jaql.
+% This shows that the cases where aggregation is required over
+% partition-able attributes, MapReduce and Hive perform better
+% compared to database access using SQL. Jaql is designed to query
+% the semi-structured data in JSON format. Hive’s engine is
+% designed to optimize simple SQL like queries compared to the
+% more generic engine of Jaql which is more suitable for semi-
+% structured data processing. From this evaluation, we can conclude
+% that asking developers to provide custom data extraction routines
+% to answer this class of queries would be an inefficient way to go.
+% Hence, for the active archive solution proposed in the next
+% section, we use Hive for data extraction.
+% 
+% implementations of Hadoop. Specifically, our domain of interest
+% is structured data generated by the transactions in an enterprise.
+% The data will move out of the enterprise data warehouse and into
+% data size. 
+% 
+% 
+% 1) Universal schema: While storing the archive data in the HDFS
+% storage, we de-normalize or flatten the data warehouse (star)
+% schema and create a single table – a universal relation [6].
+% Essentially, this amounts to converting the join queries over a star
+% schema into simple select project queries over the universal
+% schema. However, one could argue that doing so for large sized
+% schemas will blow-up the data size as well the amount of data
+% read and processed by the mappers and reducers while answering
+% queries. We handle that using column store.
+% 2) Column store: To reduce the amount of (universal relation)
+% data that is required to be read by the Hadoop we take recourse to
+% the idea that a typical query on the warehouse accesses only few
+% columns from the fact and dimension tables. So if we can ensure
+% that only the columns that are needed to compute the query
+% answer are read, it will significantly reduce the data read and
+% query evaluation times [7]. This can be achieved by organizing
+% the data with every column stored in a separate table.
+% 
+% 
+% It should be noted that using column store we reduce the
+% read cost but increase the join cost, thus depending on number of
+% records, Universal can perform better or worse compared to
+% UCStore. In general, for larger data sizes (when read cost
+% dominates) UCStore performs better compared to Universal.
+% Thus, our experimental evaluation shows that as data size
+% increases, UCStore scheme scales well and achieves the query
+% response times outperforming the star schema. This comes at a
+% cost of increased storage space requirement approximately by a
+% factor of 4 which in our opinion is a good trade-off.
+% \cite{gupta}
+% 

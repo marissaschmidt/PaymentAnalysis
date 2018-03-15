@@ -1,0 +1,247 @@
+
+
+
+        Re: Using HDFS to serve www requests
+        Click to flag this post
+
+        by Jimmy Lin Mar 26, 2009; 06:51pm :: Rate this Message: - Use ratings
+        to moderate (?)
+
+        Reply | Print | View Threaded | Show Only this Message
+        Brian---
+
+        Can you share some performance figures for typical workloads with your
+        HDFS/Fuse setup?  Obviously, latency is going to be bad but throughput
+        will probably be reasonable... but I'm curious to hear about concrete
+        latency/throughput numbers.  And, of course, I'm interested in these
+        numbers as a function of concurrent clients... ;)
+
+        Somewhat independent of file size is the workload... you can have huge
+         ve a seek-hea
+        HDFS
+        is probably a sub-optimal choice).  But if seek-heavy loads are
+        reasonable, one can solve the lots-of-little-files problem by simple
+        
+
+        Finally, I'm curious about the Fuse overhead (vs. directly using the
+        Java API).
+
+        Thanks in advance for your insights!
+
+
+From: Andrew Purtell <apurtell@xxxxxxxxxx>
+         >> To: hbase-user@xxxxxxxxxxxxxxxxx
+         >> Sent: Sun, January 10, 2010 11:30:42 AM
+         >> Subject: Re: Basic question about using C# with Hadoop filesystems
+         >>
+         >> Bear in mind that hdfs-fuse has something like a 30% performance
+         >> impact
+         >> when compared with direct access via the Java API. The data path
+         >> is
+         >> something like:
+         >>
+         >>     your app -> kernel -> libfuse -> JVM -> kernel -> HDFS
+         >>
+         >>     HDFS -> kernel-> JVM -> libfuse -> kernel -> your app
+         >>
+         >> On Windows especially context switching during I/O like that has a
+         >> high penalty. Maybe it would be better to bind the C libhdfs API
+         >> directly via a C# wrapper (see
+         >> http://wiki.apache.org/hadoop/LibHDFS).
+         >> But, at that point, you have pulled the Java Virtual Machine into
+         >> the
+         >> address space of your process and are bridging between Java land
+         >> and
+         >> C# land over the JNI and the C# equivalent. So, at this point, why
+         >> not
+         >> just use Java instead of C#? Or, just use C and limit the damage
+         >> to
+         >> only one native-to-managed interface instead of two?
+         >>
+         >> The situation will change somewhat when/if all HDFS RPC is moved
+         >> to
+         >> some RPC and serialization scheme which is truly language
+                                                                          >> independent,
+         >> i.e. Avro. I have no idea when or if that will happen. Even if
+         >> that
+         >> happens, as Ryan said before, the HDFS client is fat. Just talking
+         >> the RPC gets you maybe 25% of the way toward a functional HDFS
+         >> client.
+         >>
+         >> The bottom line is the Hadoop software ecosystem has a strong Java
+         >> affinity.
+         >>
+         >>    - Andy
+         >>
+         >>
+
+         https://issues.apache.org/jira/browse/HADOOP-4
+
+
+. With respect to the read speed, this is indeed a bit faster in our test setting (nearer 6MB/sec), but not yet similar to the Hadoop fs shell (about 10.5MB/sec). Fuse version 2.7.2
+
+# time bin/hadoop fs -cat /user/craigm/data.df > /dev/null 
+
+real    0m50.347s
+user    0m16.023s
+sys     0m6.644s
+
+# time cat /misc/hdfs/user/craigm/data.df > /dev/null 
+
+real    1m31.263s
+user    0m0.131s
+sys     0m2.384s
+
+
+I'm trying to measure the CPU taken by fuse_dfs for the same read, so we know how much CPU time it burns.
+
+Can I ask how your test time test compares to using the Hadoop fs shell on the same machine? When reading, the CPU on the client is used 45%ish, similar to the Hadoop fs shell CPU use.
+
+I feel it would be good to aim for similar performance as the Hadoop fs shell, as this seems reasonable compared to NFS in my test setting, and should scale better as the number of concurrent reads increases, given available wire bandwidth.
+
+3. With respect to the build system, it could be clearer what --with-dfspath= is meant to point to. src/Makefile.am seems to assume that include files are at ${dfspath}/include/linux and the hdfs.so at ${dfspath}/include/shared. This isnt how the Hadoop installation is laid out. Perhaps it would be better if we could give an option to the hadoop installation and it's taken from there?
+
+4. src/Makefile.am assumes an amd64 architecture. Same problem I noted in my shell script about guessing the locations of the JRE shared lib files.
+
+Craig,
+
+I should mention I tried to get fuse to do more readahead than 128K, but setting that param didn't seem to do anything. I can probably play with this tomorrow. To be honest, I don't know exactly what it means when you configure fuse module as a block device since you also need to specify the mount point. Is fuse under the covers just doing the block device so we can do better ioctl? I mean there's no way to implement a real block device since we'd have to make it look like a real filesystem. But, fuse requires both the block device and the mount point.
+
+– pete
+[ Show » ]
+Pete Wyckoff added a comment - 25/Feb/08 08:33 PM Craig, I should mention I tried to get fuse to do more readahead than 128K, but setting that param didn't seem to do anything. I can probably play with this tomorrow. To be honest, I don't know exactly what it means when you configure fuse module as a block device since you also need to specify the mount point. Is fuse under the covers just doing the block device so we can do better ioctl? I mean there's no way to implement a real block device since we'd have to make it look like a real filesystem. But, fuse requires both the block device and the mount point. – pete
+
+[ Permalink | « Hide ]
+Craig Macdonald added a comment - 26/Feb/08 01:44 PM - edited
+Hi Pete,
+
+The block stuff in fuse is appallingly documented. I have hunted the Web for info on this all afternoon, to understand it further. To be honest, the only thing I have found useful is reading the source of ntfs-3g.c at http://ntfs-3g.cvs.sourceforge.net/ntfs-3g/ntfs-3g/src/ntfs-3g.c?revision=1.106&view=markup
+
+I test I did do a few days ago was to comparing reading an NFS mounted file directly vs, the same file read via NFS via a FUSE fs - http://mattwork.potsdam.edu/projects/wiki/index.php/Rofs#rofs_code_.28C.29 (ROFS, the Read-Only Filesystem). Speed results were fairly comparable between NFS & NFS+ROFS, so it suggests that FUSE doesnt add too much overhead to IO. Hence then we can only suspect that the problem is in either (a) JNI interface, or (b) the size of the reads we're performing. A simple C tool can be generated to exclude (a).
+
+I dont have any objections to pretty large buffer sizes for fuse_dfs.c - HDFS is designed for large files, and streaming read access.
+
+Btw, you mentioned you are re-exporting the mounted FS as NFS - have you had any issues vs the issues described in fuses' README.NFS?
+
+Regards
+
+Craig
+
+
+
+n Tue, May 11, 2010 at 8:14 AM, Allen Wittenauer
+<awittena...@linkedin.com> wrote:
+>
+> On May 11, 2010, at 7:42 AM, Bastian Lorenz wrote:
+>> i have set up an hdfs cluster with three nodes(one master, two
+>> datanodes). Everything works fine…so far! Now i want to mount my hdfs
+>> with Fuse. This works also. The mountpoint is /export/hdfs. I want to
+>> store qcow2 files in hdfs an boot from an iso which is also stored in
+>> hdfs.
+>
+> I expect performance to be similar to that of glaciers moving across a 
+> continent.  Last I heard, FUSE-HDFS was a 60% performance hit over normal 
+> HDFS.
+>
+
+Depends on the operation.  Meta-data intensive operations like ls are
+slower but bulk transfer of large files is pretty close to using the
+performance of using the client directly (eg fs -put or -get).
+
+Thanks,
+Eli
+
+
+
+Hey Robert,
+
+
+I would chime in saying that our usage of FUSE results in a network transfer rate of about 30MB/s, and it does not seem to be a limiting factor (right now, we're CPU bound).
+
+In our (limited) tests, we've achieved 80Gbps of reads in our cluster overall. This did not appear to push the limits of FUSE or Hadoop.
+
+Since we've applied the patches (which are in 0.18.2 by default), we haven't had any corruption issues. Our application has rather heavy- handed internal file checksums, and the jobs would crash immediately if they were reading in garbage.
+
+Brian
+
+On Nov 4, 2008, at 10:07 AM, Robert Krüger wrote:
+
+
+    Thanks! This is good news. So it's fast enough for our purposes if it
+    turns out to be the same order of magnitude on our systems.
+
+    Have you used this with rsync? If so, any known issues with that
+    (reading or writing)?
+
+    Thanks in advance,
+
+    Robert
+
+
+    Pete Wyckoff wrote:
+
+        Reads are 20-30% slower
+
+        Writes are 33% slower before https://issues.apache.org/jira/browse/HADOOP-3805 - You need a kernel > 2.6.26-rc* to test 3805, which I don't have :(
+
+        These #s are with hadoop 0.17 and the 0.18.2 version of fuse-dfs.
+
+        -- pete
+
+
+        On 11/2/08 6:23 AM, "Robert Krüger" <[EMAIL PROTECTED]> wrote:
+
+
+
+        Hi Pete,
+
+
+        thanks for the info. That helps a lot. We will probably test it for our use cases then. Did you benchmark throughput when reading writing files through fuse-dfs and compared it to command line tool or API access? Is
+
+        there a notable difference?
+
+        Thanks again,
+
+        Robert
+
+
+
+        Pete Wyckoff wrote:
+
+            It has come a long way since 0.18 and facebook keeps our (0.17) dfs mounted via fuse and uses that for some operations.
+
+            There have recently been some problems with fuse-dfs when used in a multithreaded environment, but those have been fixed in 0.18.2 and 0.19. (do not use 0.18 or 0.18.1)
+
+            The current (known) issues are:
+
+            1. Wrong semantics when copying over an existing file - namely it does a delete and then re-creates the file, so ownership/ permissions may end up wrong. There is a patch for this. 2. When directories have 10s of thousands of files, performance can be very poor. 3. Posix truncate is supported only for truncating it to 0 size since hdfs doesn't support truncate. 4. Appends are not supported - this is a libhdfs problem and there is a patch for it.
+
+            It is still a pre-1.0 product for sure, but it has been pretty stable for us.
+
+
+            -- pete
+
+
+            On 10/31/08 9:08 AM, "Robert Krüger" <[EMAIL PROTECTED]> wrote:
+
+
+
+            Hi,
+
+
+            could anyone tell me what the current Status of FUSE support for HDFS
+
+            is? Is this something that can be expected to be usable in a few
+            weeks/months in a production environment? We have been really
+            happy/successful with HDFS in our production system. However, some
+            software we use in our application simply requires an OS-Level file
+
+            system which currently requires us to do a lot of copying between HDFS and a regular file system for processes which require that software and FUSE support would really eliminate that one disadvantage we have with HDFS. We wouldn't even require the performance of that to be outstanding because just by eliminatimng the copy step, we would greatly increase
+
+            the thruput of those processes.
+
+            Thanks for sharing any thoughts on this.
+
+            Regards,
+
+
